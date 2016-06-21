@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Free Everything: Open Source Bridge 2016 Presentation</title>
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/blood.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h2>Free Everything</h2>
+				<h3>Hacking Content Liberation</h3>
+
+				<p>
+					Presentation at <a href="http://opensourcebridge.org/">Open Source Bridge 2016</a>
+					<br> June 21, 2016
+					<br> Erik M&ouml;ller - <a href="https://twitter.com/xirzon">@xirzon</a>
+					<p>
+						<small>Slides: <a href="https://freyourstuff.cc/osb2016">https://freyourstuff.cc/osb2016</a></small>
+
+			</section>
+			<section>Imagine a world... <span class="fragment">in which you don't own your data.</span></section>
+			<section><img src="moments.png" class="stretch"></section>
+			<section><img src="yelp.png" class="stretch"></section>
+			<section>
+				<p>Many sites offer ..</p>
+				<ul>
+					<li class="fragment">No export of <i>all</i> your contributions
+						<li class="fragment">No Creative Commons license
+							<li class="fragment">Limited APIs
+				</ul>
+			</section>
+			<section data-background-image="web.jpg" data-transition="fade" data-background-transition="fade">
+				<p style="color:#c00;text-shadow: 2px 2px #000000;">The Network Effect</p>
+				<p style="color:white;text-shadow: 2px 2px #000000;" class="fragment">and how to hack it.</p>
+			</section>
+			<section data-background-transition="zoom">
+				<video src="recording.webm" class="stretch" autoplay></video>
+			</section>
+			<section data-transition="slide" data-background-image="kitten.jpg">
+				<p style="text-shadow: 2px 2px #000000;">But how does it work?</p>
+			</section>
+			<section>
+				<img src="architecture.png">
+			</section>
+			<section>
+				<p>Let's look at a plugin!</p>
+				<p class="fragment"><code><a href="https://github.com/eloquence/freeyourstuff.cc/blob/master/extension/src/plugins/yelp/index.js">extension/src/plugins/yelp/index.js</a></code></p>
+
+			</section>
+			<section>
+				<section>
+					<pre><code>function retrieveReviews(callback) {
+  let page = 1;
+  let reviews = {
+    head: {},
+    data: []
+  };
+  let firstURL = 'https://www.yelp.com/user_details_reviews_self';
+  $.get(firstURL)
+    .done(processPage)
+    .fail(plugin.handleConnectionError(firstURL));
+</code></pre>
+				</section>
+				<section>
+					<pre><code>function processPage(html) {
+try {
+  let $dom = $($.parseHTML(html));
+  if (page === 1) {
+    let idLink = $dom.find('.user-display-name');
+    reviews.head.reviewerName = idLink.text();
+    reviews.head.reviewerID =
+      (idLink.attr('href').match(/userid=(.*)/) || [])[1];
+  }
+</code></pre>
+				</section>
+<section>
+<pre><code>retrieveReviews(reviews => {
+  datasets.reviews = new DataSet(reviews, request.schema.reviews).set;
+  chrome.runtime.sendMessage({
+    action: 'dispatch',
+    data: datasets,
+    schema: request.schema
+  });
+});
+</code></pre>
+			</section>
+		</section>
+			<section>
+				Plugins are fragile! How to test them?
+			</section>
+			<section>
+				Like this:
+				<pre><code>var jsonTests = {
+  reviews: retrieveReviews
+};
+</code></pre>
+				<span class="fragment">
+<p>The Node.js test runner will:</p>
+<ol>
+<li>load Chrome's cookies
+<li>run <code>retrieveReviews</code> inside <code>jsdom</code>
+<li>diff with any previous results to show inconsistencies
+</ol>
+</span>
+			</section>
+			<section>
+				<h2>What's next?</h2>
+				<ul>
+					<li>Investigate <code>phantomjs</code> for tests
+						<li>Download multimedia!
+							<li>Your plugin?
+								<li>And a related project:
+				</ul>
+				<img src="libreviews.jpg" class="fragment">
+			</section>
+			<section>
+				<p>Credits:</p>
+				<ul>
+					<li><a href="https://commons.wikimedia.org/wiki/File:Typical-orb-web-photo.jpg">Spider web photograph</a>: Chen-Pan Liao, <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC-BY-SA</a>
+						<li>Confused kitten: <a href="http://randomwallpapers.net/confused-kitten_w158405">randomwallpapers.net</a>
+							<li>Slides powered by <a href="https://github.com/hakimel/reveal.js">reveal.js</a> by Hakim el Hattab</li>
+			</section>
+		</div>
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+		// More info https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			history: true,
+
+			// More info https://github.com/hakimel/reveal.js#dependencies
+			dependencies: [{
+				src: 'plugin/markdown/marked.js'
+			}, {
+				src: 'plugin/markdown/markdown.js'
+			}, {
+				src: 'plugin/notes/notes.js',
+				async: true
+			}, {
+				src: 'plugin/highlight/highlight.js',
+				async: true,
+				callback: function() {
+					hljs.initHighlightingOnLoad();
+				}
+			}]
+		});
+	</script>
+</body>
+
+</html>
