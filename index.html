@@ -59,25 +59,26 @@
 				<p style="text-shadow: 2px 2px #000000;">But how does it work?</p>
 			</section>
 			<section>
-			<section>
-				<img src="architecture.png">
+				<section>
+					<img src="architecture.png">
+				</section>
+				<section>
+					<p>How does a Chrome extension work?</p>
+					<img src="extension.jpg">
+					<p class="fragment">Firefox <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions">WebExtensions</a> (still alpha) are very similar ("designed for compatibility").</p>
+				</section>
 			</section>
-			<section>
-				<p>How does a Chrome extension work?</p>
-				<img src="extension.jpg">
-				<p class="fragment">Firefox <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions">WebExtensions</a> (still alpha) are very similar ("designed for compatibility").</p>
-			</section>
-		</section>
 			<section>
 				<p>Let's look at a plugin!
 
-			<p class="fragment">
-				Reminder: Slides at <a href="https://freeyourstuff.cc/osb2016">https://freeyourstuff.cc/osb2016</a></p>
-			</p>
+					<p class="fragment">
+						Reminder: Slides at <a href="https://freeyourstuff.cc/osb2016">https://freeyourstuff.cc/osb2016</a></p>
+				</p>
 			</section>
 			<section>
 				<section>
-					<code><a href="https://github.com/eloquence/freeyourstuff.cc/blob/master/extension/src/plugins/yelp/index.js">extension/src/plugins/yelp/index.js</a></code><br>
+					<code><a href="https://github.com/eloquence/freeyourstuff.cc/blob/master/extension/src/plugins/yelp/index.js">extension/src/plugins/yelp/index.js</a></code>
+					<br>
 
 					<pre><code>function retrieveReviews(callback) {
   let page = 1;
@@ -89,8 +90,7 @@
   $.get(firstURL)
     .done(processPage)
     .fail(plugin.handleConnectionError(firstURL));
-</code></pre>
-(Confused by ES6 syntax like <code>let</code>? <a href="http://help.wtf/es6">Here's a cheatsheet</a>.)
+</code></pre> (Confused by ES6 syntax like <code>let</code>? <a href="http://help.wtf/es6">Here's a cheatsheet</a>.)
 				</section>
 				<section>
 					<pre><code>function processPage(html) {
@@ -104,8 +104,8 @@ try {
   }
 </code></pre>
 				</section>
-<section>
-<pre><code>retrieveReviews(reviews => {
+				<section>
+					<pre><code>retrieveReviews(reviews => {
   datasets.reviews = new DataSet(reviews, request.schema.reviews).set;
   chrome.runtime.sendMessage({
     action: 'dispatch',
@@ -114,19 +114,19 @@ try {
   });
 });
 </code></pre>
+				</section>
 			</section>
-		</section>
 			<section>
 				Plugins are fragile! How to test them?
 			</section>
 			<section>
-			<section>
-				Like this:
-				<pre><code>var jsonTests = {
+				<section>
+					Like this:
+					<pre><code>var jsonTests = {
   reviews: retrieveReviews
 };
 </code></pre>
-				<span class="fragment">
+					<span class="fragment">
 <p>The Node.js test runner will:</p>
 <ol>
 <li>load Chrome's cookies
@@ -134,10 +134,10 @@ try {
 <li>diff with any previous results to show inconsistencies
 </ol>
 </span>
-			</section>
-<section>
-	Using <code>jsdom</code> inside Node.js
-<pre><code>let virtualConsole = jsdom.createVirtualConsole().sendTo(console);
+				</section>
+				<section>
+					Using <code>jsdom</code> inside Node.js
+					<pre><code>let virtualConsole = jsdom.createVirtualConsole().sendTo(console);
 const document = jsdom.jsdom(undefined, {
 	userAgent,
 	cookieJar,
@@ -145,10 +145,10 @@ const document = jsdom.jsdom(undefined, {
 	url: schemas[schemaKey].schema.site.canonicalURL
 });
 let window = document.defaultView;</code></pre>
-<p>
-<a href="https://github.com/eloquence/freeyourstuff.cc/blob/master/service/tests/index.js">service/tests/index.js</a>
-</section>
-</section>
+					<p>
+						<a href="https://github.com/eloquence/freeyourstuff.cc/blob/master/service/tests/index.js">service/tests/index.js</a>
+				</section>
+			</section>
 			<section>
 				<h2>What's next?</h2>
 				<ul>
@@ -165,7 +165,7 @@ let window = document.defaultView;</code></pre>
 					<li><a href="https://commons.wikimedia.org/wiki/File:Typical-orb-web-photo.jpg">Spider web photograph</a>: Chen-Pan Liao, <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC-BY-SA</a>
 						<li>Confused kitten: <a href="http://randomwallpapers.net/confused-kitten_w158405">randomwallpapers.net</a>
 							<li> Chrome extension architecture: <a href="https://developer.chrome.com/extensions/overview">Google Chrome Developer Docs</a>
-							<li>Slides powered by <a href="https://github.com/hakimel/reveal.js">reveal.js</a> by Hakim el Hattab</li>
+								<li>Slides powered by <a href="https://github.com/hakimel/reveal.js">reveal.js</a> by Hakim el Hattab</li>
 			</section>
 		</div>
 	</div>
@@ -196,5 +196,4 @@ let window = document.defaultView;</code></pre>
 		});
 	</script>
 </body>
-
 </html>
